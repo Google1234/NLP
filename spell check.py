@@ -39,19 +39,66 @@ def make_trie(words):
     print "---->Finish sort words:",words
     print "---->Begin make trie"
     #initiate
-    pointer=0
-    value='#'         #size =size of words
-    child_pointer=0   #size = 4
-    next_pointer=0    #size = 4
     buff=[]
-    buff.append([value,child_pointer,next_pointer])
-    pointer+=1
+    pointer=0
+    last_word=['' for i in range(15)]
+    last_word_letter_index_information=[0 for i in range(15)]
+    last_length=0
+
+    buff.append(['',0,0])
+    pointer=0
+    last_word=''
+    last_word_letter_index_information[0]=0
+    last_length=1
     #run
     for word in words:
-        last_value=buff[pointer-1][0]
+        length=len(word)
+        t=min(length,last_length)
+        while last_word[:t]!=word[:t]:
+            t-=1
+        #first
+        brother=last_word_letter_index_information[t]
+        buff.append([word[t],0,0])
+        pointer+=1
+        buff[brother][2]=pointer #brother
+        last_word_letter_index_information[t]=pointer
+        parent=pointer
+        t+=1
+        while t<length:
+            buff.append([word[t],0,0])
+            pointer+=1
+            buff[parent][1]=pointer #child
+            last_word_letter_index_information[t]=pointer
+            parent=pointer
+            t+=1
+        #last : ''
+        buff.append(['',0,0])
+        pointer+=1
+        buff[parent][1]=pointer #child
+        last_word_letter_index_information[t]=pointer
 
-    return 0
+        last_word=word+''
+        last_length=len(word)
+    return buff
+def look(word,trie):
+    pointer=0
+    exist=True
+    for c in word:
+        while c!=trie[pointer][0]:
+            pointer=trie[pointer][2]
+            if pointer==0:
+                exist=False
+                break
+        if exist:
+           pointer=trie[pointer][1]
+        else:
+            break
+    if ''!=trie[pointer][0]:
+        exist=False
+    print word, "exist?---->",exist
+    return exist
+
 
 words=['a','ad','ec','z','bc']
-make_trie(words)
+look('',make_trie(words))
 
