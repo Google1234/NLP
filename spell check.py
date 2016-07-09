@@ -161,6 +161,7 @@ def look(word,trie):
     return exist
 
 
+
 words=['a','ad','ec','z','bc']
 trie=make_trie_from_txtFile("english_words.txt")
 look('andtt',trie)
