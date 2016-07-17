@@ -1,36 +1,5 @@
 #-*- coding: UTF-8 -*-
-class quick_sort():
-    a=[]
-    def __init__(self,data):
-        self.a=data[:]
-    def sort(self,left,right):
-        if left!=right:
-            mid=left+int((right-left)/2)
-            self.sort(left,mid)
-            self.sort(mid+1,right)
-            b=[]
-            i=0
-            for i in range(left,mid+1):
-                b.append(self.a[i])
-            b.append('zz')
-            i=0
-            for i in range(mid+1,right+1):
-                b.append(self.a[i])
-            b.append('zz')
-
-            i=j=0
-            k=mid-left+2
-            for i in range(left,right+1):
-                if b[j]>b[k]:
-                    value=b[k]
-                    k+=1
-                else:
-                    value=b[j]
-                    j+=1
-                self.a[i]=value
-        return self.a
-    def show(self):
-        print(self.a)
+from depend import *
 def make_trie(words):
     print "---->Begin sort words"
     sort=quick_sort(words)
@@ -159,11 +128,73 @@ def look(word,trie):
         exist=False
     print word, "exist?---->",exist
     return exist
+def calulate_distance(word1,word2):
+    word1='#'+word1
+    word2='#'+word2
+    distance=[[0 for i in range(len(word2))] for j in range(len(word1))]
+    for i in range(len(word1)):
+        distance[i][0]=i
+    for j in range(len(word2)):
+        distance[0][j]=j
+    for i in range(len(word1)-1):
+        for j in range(len(word2)-1):
+            if word1[i+1]==word2[j+1]:
+                distance[i+1][j+1]=distance[i][j]
+            else:
+                if word1[i]==word2[j+1] and word1[i+1]==word2[j]:
+                    distance[i + 1][j + 1] = 1+min(distance[i-1][j-1],distance[i][j+1],distance[i+1][j])
+                else:
+                    distance[i + 1][j + 1] = 1 + min(distance[i][j], distance[i][j + 1], distance[i + 1][j])
+    return distance[len(word1)-1][len(word2)-1]
+class spell_check:
+    def __init__(self,trie):
+        self.trie=trie
+    def search(self,front_part,child):
+        pointer=child
+        while 1:
+            c=self.trie[pointer][0]
+            if c=='':
+                correct_word = front_part
+                d = calulate_distance(self.word, correct_word)
+                if d <= self.tol:
+                    self.similar.append([d,correct_word])
+            else:
+                trie_word=front_part+c
+                m=len(trie_word)
+                l=max(1,m-self.tol)
+                u=min(self.word_length,m+self.tol)
+                min_distance=100
+                for i in range(l, u+1):
+                    min_distance=min(min_distance,calulate_distance(self.word[:i], trie_word))
+                if min_distance <= self.tol and self.trie[pointer][0]!='':
+                    self.search(trie_word,self.trie[pointer][1])#child
+            pointer=self.trie[pointer][2]#brother
+            if pointer==0:
+                break
+    def spell_check(self,word,tol=3,topK=5):
+        '''
+        :param trie:
+        :param word:
+        :param tol: 允许拼写错误的次数
+        :return:
+        '''
+        self.word = word
+        self.tol = tol
+        self.word_length = len(word)
+        self.similar=[]
+        self.search('',0)
+        if self.similar!=[]:
+            sort=quick_sort_Multidimensional_Data(self.similar)
+            sort.sort(0,len(self.similar)-1)
+            for i in range(topK):
+                print sort.a[i]
 
 
-words=['a','ad','ec','z','bc']
+#words=['aq','ad','ec','z','bc','bad','bav']
 trie=make_trie_from_txtFile("english_words.txt")
-look('andtt',trie)
-look('ands',trie)
-look('finds',trie)
-
+#trie=make_trie(words)
+#look('andtt',trie)
+#look('ands',trie)
+#look('finds',trie)
+check=spell_check(trie)
+check.spell_check('happy',2,5)
