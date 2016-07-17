@@ -189,13 +189,8 @@ class spell_check:
             for i in range(topK):
                 print sort.a[i]
 
-
-<<<<<<< HEAD
 #words=['aq','ad','ec','z','bc','bad','bav']
-=======
-
-words=['a','ad','ec','z','bc']
->>>>>>> origin/master
+#words=['a','ad','ec','z','bc']
 trie=make_trie_from_txtFile("english_words.txt")
 #trie=make_trie(words)
 #look('andtt',trie)
