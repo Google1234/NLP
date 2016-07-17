@@ -1,5 +1,6 @@
 #-*- coding: UTF-8 -*-
 from depend import *
+import time
 def make_trie(words):
     print "---->Begin sort words"
     sort=quick_sort(words)
@@ -52,6 +53,7 @@ def make_trie(words):
     return buff
 def make_trie_from_txtFile(filename):
     print "---->Begin read words from File"
+    start=time.time()
     f=open(filename)
     words=[]
     word=f.readline()
@@ -107,9 +109,10 @@ def make_trie_from_txtFile(filename):
             pointer+=1
             buff[parent][1]=pointer #child
             last_word_letter_index_information[t]=pointer
-
             last_word=word+''
             last_length=len(word)
+    end=time.time()
+    print "time cost:",end-start
     return buff
 def look(word,trie):
     pointer=0
@@ -183,11 +186,16 @@ class spell_check:
         self.word_length = len(word)
         self.similar=[]
         self.search('',0)
+        print "Input word:",word
+        print "Top ",topK," Correct word:"
         if self.similar!=[]:
             sort=quick_sort_Multidimensional_Data(self.similar)
             sort.sort(0,len(self.similar)-1)
             for i in range(topK):
-                print sort.a[i]
+                if i<len(self.similar):
+                    print sort.a[i]
+                else:
+                    break
 
 #words=['aq','ad','ec','z','bc','bad','bav']
 #words=['a','ad','ec','z','bc']
@@ -197,4 +205,4 @@ trie=make_trie_from_txtFile("english_words.txt")
 #look('ands',trie)
 #look('finds',trie)
 check=spell_check(trie)
-check.spell_check('happy',2,5)
+check.spell_check('wront',2,10)
